@@ -1,9 +1,15 @@
 package de.intranda.goobi.plugins;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.goobi.beans.Process;
 import org.goobi.beans.Step;
 import org.goobi.production.enums.PluginType;
@@ -11,7 +17,8 @@ import org.goobi.production.plugin.interfaces.IExportPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 
 import de.sub.goobi.config.ConfigPlugins;
-import de.sub.goobi.export.dms.ExportDms;
+import de.sub.goobi.helper.StorageProvider;
+import de.sub.goobi.helper.StorageProviderInterface;
 import de.sub.goobi.helper.VariableReplacer;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.ExportFileException;
@@ -56,21 +63,26 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
 
     @Override
     public boolean startExport(Process process) throws IOException, InterruptedException, DocStructHasNoTypeException, PreferencesException,
-    WriteException, MetadataTypeNotAllowedException, ExportFileException, UghHelperException, ReadException, SwapException, DAOException,
-    TypeNotAllowedForParentException {
+            WriteException, MetadataTypeNotAllowedException, ExportFileException, UghHelperException, ReadException, SwapException, DAOException,
+            TypeNotAllowedForParentException {
         String benutzerHome = process.getProjekt().getDmsImportImagesPath();
         return startExport(process, benutzerHome);
     }
 
     @Override
     public boolean startExport(Process process, String destination) throws IOException, InterruptedException, DocStructHasNoTypeException,
-    PreferencesException, WriteException, MetadataTypeNotAllowedException, ExportFileException, UghHelperException, ReadException,
-    SwapException, DAOException, TypeNotAllowedForParentException {
+            PreferencesException, WriteException, MetadataTypeNotAllowedException, ExportFileException, UghHelperException, ReadException,
+            SwapException, DAOException, TypeNotAllowedForParentException {
         problems = new ArrayList<>();
+        VariableReplacer replacer;
 
         // read information from config file
-        String test = ConfigPlugins.getPluginConfig(title).getString("value", "");
-        System.out.println("value from configuration file: " + test);
+        XMLConfiguration config = ConfigPlugins.getPluginConfig(title);
+        String exportFolder = config.getString("exportFolder", "/opt/digiverso/export/");
+        String metdataPublicationDate = config.getString("metdataPublicationDate", "$(meta.DateOfOrigin)");
+        String metdataPublicationCode = config.getString("metdataPublicationCode", "$(meta.Type)");
+        String dateReadPattern = config.getString("dateReadPattern", "yyyy-MM-dd");
+        String dateWritePattern = config.getString("dateWritePattern", "ddMMyyyy");
 
         // read mets file to test if it is readable
         try {
@@ -78,25 +90,63 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
             Fileformat ff = null;
             ff = process.readMetadataFile();
             DigitalDocument dd = ff.getDigitalDocument();
-            VariableReplacer replacer = new VariableReplacer(dd, prefs, process, null);
+            replacer = new VariableReplacer(dd, prefs, process, null);
         } catch (ReadException | PreferencesException | IOException | SwapException e) {
             log.error(e);
             problems.add("Cannot read metadata file.");
             return false;
         }
 
-        // do a regular export here
-        IExportPlugin export = new ExportDms();
-        export.setExportFulltext(true);
-        export.setExportImages(true);
-
-        // execute the export and check the success
-        boolean success = export.startExport(process);
-        if (!success) {
-            log.error("Export aborted for process with ID " + process.getId());
-        } else {
-            log.info("Export executed for process with ID " + process.getId());
+        // get publication date and check it
+        String publicationDateString = replacer.replace(metdataPublicationDate);
+        if (publicationDateString.equals(metdataPublicationDate)) {
+            problems.add("Metadata for publicaten date cannot be found (" + publicationDateString + ".");
+            return false;
         }
-        return success;
+
+        // get publication code and check it
+        String publicationCode = replacer.replace(metdataPublicationCode);
+        if (publicationCode.equals(metdataPublicationCode)) {
+            problems.add("Metadata for publicaten code cannot be found (" + publicationCode + ".");
+            return false;
+        }
+
+        // prepare date conversion
+        DateTimeFormatter fRead = DateTimeFormatter.ofPattern(dateReadPattern);
+        DateTimeFormatter fWrite = DateTimeFormatter.ofPattern(dateWritePattern);
+        LocalDate pubDate = LocalDate.parse(publicationDateString, fRead);
+        LocalDate curDate = LocalDate.now();
+
+        //define folder structure and create folder if it is not there already
+        StorageProviderInterface sp = StorageProvider.getInstance();
+        Path folder = Paths.get(exportFolder, curDate.format(fWrite) + "/", publicationCode + "/", pubDate.format(fWrite) + "/");
+        sp.createDirectories(folder);
+
+        // define file name and check if it exists already, otherwise find next free file name
+        int currentNo = 1;
+        Path file = Paths.get(folder.toString(), pubDate.format(fWrite) + "_" + String.format("%02d", currentNo) + ".pdf");
+        while (sp.isFileExists(file)) {
+            file = Paths.get(folder.toString(), pubDate.format(fWrite) + "_" + String.format("%02d", ++currentNo) + ".pdf");
+        }
+
+        // find PDF files in master folder and take the first one to copy to target folder
+        List<Path> pdffiles = sp.listFiles(process.getImagesOrigDirectory(false), pdfFilter);
+        if (!pdffiles.isEmpty()) {
+            sp.copyFile(pdffiles.get(0), file);
+        } else {
+            problems.add("No PDF file found in folder " + process.getImagesOrigDirectory(false) + "to import.");
+            return false;
+        }
+
+        log.info("Export executed for process with ID " + process.getId());
+        return true;
     }
+
+    /**
+     * File Filter to get pdf files from file system
+     */
+    private static final DirectoryStream.Filter<Path> pdfFilter = path -> {
+        String name = path.getFileName().toString();
+        return name.toLowerCase().endsWith(".pdf");
+    };
 }
