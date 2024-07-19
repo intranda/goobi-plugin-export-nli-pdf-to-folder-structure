@@ -119,7 +119,7 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
 
         //define folder structure and create folder if it is not there already
         StorageProviderInterface sp = StorageProvider.getInstance();
-        Path folder = Paths.get(exportFolder, curDate.format(fWrite) + "/", publicationCode + "/", pubDate.format(fWrite) + "/");
+        Path folder = Paths.get(exportFolder, curDate.format(fWrite) + "/", publicationCode + "/");
         sp.createDirectories(folder);
 
         // define file name and check if it exists already, otherwise find next free file name
