@@ -1,6 +1,23 @@
 <config_plugin>
  
-    <!-- sample parameter -->
-    <value>test</value>
+    <!-- export root folder (e.g. /opt/digiverso/export/nli) -->
+	<exportFolder>/opt/digiverso/export/nli</exportFolder>
+	
+	<!-- metadata field with publication date information
+		you can use variable replacer expressions here like e.g.: 
+		- $(meta.CatalogIDDigital) 
+		- $(meta.topstruct.TitleDocMain) 
+		- $(process.Template) -->
+	<metdataPublicationDate>$(meta.DateOfOrigin)</metdataPublicationDate>
+
+	<!-- metadata field with code information 
+		you can use variable replacer expressions here, too -->
+	<metdataPublicationCode>$(meta.Type)</metdataPublicationCode>
+
+	<!-- pattern to use for reading the date information -->
+	<dateReadPattern>yyyy-MM-dd</dateReadPattern>
+
+	<!-- pattern to use for writing the date information -->
+	<dateWritePattern>yyyyMMdd</dateWritePattern>
 
 </config_plugin>
