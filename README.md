@@ -15,8 +15,8 @@ Detail                      | Description
 **Plugin identifier**       | intranda_export_nli_pdf_to_folder_structure
 **Plugin type**             | export
 **Licence**                 | GPL 2.0 or newer
-**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/eng/export/goobi-plugin-export-nli-pdf-to-folder-structure
-**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/ger/export/goobi-plugin-export-nli-pdf-to-folder-structure
+**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/ger/export/goobi-plugin-export-nli-pdf-to-folder-structure
+**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/eng/export/goobi-plugin-export-nli-pdf-to-folder-structure
 
 ## Goobi details
 
