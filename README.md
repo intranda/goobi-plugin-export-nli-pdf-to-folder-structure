@@ -10,13 +10,13 @@ This is a plugin for Goobi workflow, the open source workflow tracking software 
 
 More information about the functionality of this plugin and the complete documentation can be found in the central documentation area at https://docs.goobi.io
 
-Detail                      | Description 
+Detail                      | Description
 --------------------------- | ----------------------
 **Plugin identifier**       | intranda_export_nli_pdf_to_folder_structure
 **Plugin type**             | export
 **Licence**                 | GPL 2.0 or newer
-**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/eng/export/goobi-plugin-export-nli-pdf-to-folder-structure
-**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/ger/export/goobi-plugin-export-nli-pdf-to-folder-structure
+**Documentation (German)**  | https://docs.goobi.io/workflow-plugins/v/ger/export/goobi-plugin-export-nli-pdf-to-folder-structure
+**Documentation (English)** | https://docs.goobi.io/workflow-plugins/v/eng/export/goobi-plugin-export-nli-pdf-to-folder-structure
 
 ## Goobi details
 
