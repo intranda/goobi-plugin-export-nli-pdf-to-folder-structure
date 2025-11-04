@@ -3,6 +3,10 @@ title: PDF-Export in Verzeichnisstruktur der NLI
 identifier: intranda_export_nli_pdf_to_folder_structure
 description: Export Plugin für den Export von PDF-Dateien mit besonderer Ordner- und Dateibenennung für die Nationalbibliothek Israel.
 published: true
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Export Plugin
 ---
 
 ## Einführung
