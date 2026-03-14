@@ -43,8 +43,8 @@ The parameters used are described here:
 Parameter                | Explanation
 -------------------------|------------------------------------
 `exportFolder`           | Main directory for the export (e.g. `/opt/digiverso/export`)
-`metdataPublicationDate` | Metadata for the publication date; the syntax for the VariableReplacer can be used here (e.g. `$(meta.DateOfOrigin)`)
-`metdataPublicationCode` | Metadata for the publication code; the syntax for the VariableReplacer can be used here (e.g. `$(meta.Type)`)
+`metadataPublicationDate` | Metadata for the publication date; the syntax for the VariableReplacer can be used here (e.g. `$(meta.DateOfOrigin)`)
+`metadataPublicationCode` | Metadata for the publication code; the syntax for the VariableReplacer can be used here (e.g. `$(meta.Type)`)
 `dateReadPattern`        | Pattern for reading the publication date (e.g. `yyyy-MM-dd`)
 `dateWritePattern`       | Pattern for writing the current and publication date (e.g. `ddMMyyyy`)
 
