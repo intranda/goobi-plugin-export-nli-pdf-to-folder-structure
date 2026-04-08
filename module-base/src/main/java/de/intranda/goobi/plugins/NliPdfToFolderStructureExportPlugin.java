@@ -42,6 +42,7 @@ import ugh.exceptions.WriteException;
 @Log4j2
 public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlugin {
 
+    private static final long serialVersionUID = -8466626389946881597L;
     @Getter
     private String title = "intranda_export_nli_pdf_to_folder_structure";
     @Getter
@@ -100,14 +101,18 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
         // get publication date and check it
         String publicationDateString = replacer.replace(metdataPublicationDate);
         if (publicationDateString.equals(metdataPublicationDate)) {
-            problems.add("Metadata for publicaten date cannot be found (" + publicationDateString + ".");
+            String error = "Export failed, metadata for publicaten date cannot be found (" + publicationDateString + ".";
+            log.error(error);
+            problems.add(error);
             return false;
         }
 
         // get publication code and check it
         String publicationCode = replacer.replace(metdataPublicationCode);
         if (publicationCode.equals(metdataPublicationCode)) {
-            problems.add("Metadata for publicaten code cannot be found (" + publicationCode + ".");
+            String error = "Export failed, metadata for publicaten code cannot be found (" + publicationCode + ".";
+            log.error(error);
+            problems.add(error);
             return false;
         }
 
@@ -134,7 +139,9 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
         if (!pdffiles.isEmpty()) {
             sp.copyFile(pdffiles.get(0), file);
         } else {
-            problems.add("No PDF file found in folder " + process.getImagesOrigDirectory(false) + "to import.");
+            String error = "Export failed, no PDF file found in folder " + process.getImagesOrigDirectory(false) + "to import.";
+            log.error(error);
+            problems.add(error);
             return false;
         }
 
