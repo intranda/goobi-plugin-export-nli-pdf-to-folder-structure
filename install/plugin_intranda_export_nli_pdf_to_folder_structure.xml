@@ -10,9 +10,13 @@
 		- $(process.Template) -->
 	<metdataPublicationDate>$(meta.DateOfOrigin)</metdataPublicationDate>
 
-	<!-- metadata field with code information 
+	<!-- metadata field with code information
 		you can use variable replacer expressions here, too -->
 	<metdataPublicationCode>$(meta.Type)</metdataPublicationCode>
+
+	<!-- metadata field with the issue number, appended to the file name as -N<issue number>
+		you can use variable replacer expressions here, too -->
+	<metdataIssueNumber>$(meta.shelfmarksource)</metdataIssueNumber>
 
 	<!-- pattern to use for reading the date information -->
 	<dateReadPattern>yyyy-MM-dd</dateReadPattern>

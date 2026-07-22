@@ -1,10 +1,13 @@
 package de.intranda.goobi.plugins;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -65,6 +68,26 @@ public class NliPdfToFolderStructureExportPluginTest {
     public void testConstructor() {
         NliPdfToFolderStructureExportPlugin plugin = new NliPdfToFolderStructureExportPlugin();
         assertNotNull(plugin);
+    }
+
+    @Test
+    public void testBuildFileNameIncludesIssueNumber() {
+        DateTimeFormatter fWrite = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate pubDate = LocalDate.of(2026, 4, 7);
+
+        String fileName = NliPdfToFolderStructureExportPlugin.buildFileName(fWrite, pubDate, 1, "28510");
+
+        assertEquals("20260407_01-N28510.pdf", fileName);
+    }
+
+    @Test
+    public void testBuildFileNamePadsRunningNumberToTwoDigits() {
+        DateTimeFormatter fWrite = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate pubDate = LocalDate.of(2026, 4, 7);
+
+        String fileName = NliPdfToFolderStructureExportPlugin.buildFileName(fWrite, pubDate, 12, "28510");
+
+        assertEquals("20260407_12-N28510.pdf", fileName);
     }
 
     private XMLConfiguration getConfig() {

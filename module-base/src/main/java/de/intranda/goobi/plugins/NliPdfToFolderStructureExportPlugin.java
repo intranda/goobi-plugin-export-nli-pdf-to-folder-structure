@@ -82,6 +82,7 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
         String exportFolder = config.getString("exportFolder", "/opt/digiverso/export/");
         String metdataPublicationDate = config.getString("metdataPublicationDate", "$(meta.DateOfOrigin)");
         String metdataPublicationCode = config.getString("metdataPublicationCode", "$(meta.Type)");
+        String metdataIssueNumber = config.getString("metdataIssueNumber", "$(meta.CurrentNo)");
         String dateReadPattern = config.getString("dateReadPattern", "yyyy-MM-dd");
         String dateWritePattern = config.getString("dateWritePattern", "ddMMyyyy");
 
@@ -116,6 +117,15 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
             return false;
         }
 
+        // get issue number and check it
+        String issueNumber = replacer.replace(metdataIssueNumber);
+        if (issueNumber.equals(metdataIssueNumber)) {
+            String error = "Export failed, metadata for issue number cannot be found (" + issueNumber + ".";
+            log.error(error);
+            problems.add(error);
+            return false;
+        }
+
         // prepare date conversion
         DateTimeFormatter fRead = DateTimeFormatter.ofPattern(dateReadPattern);
         DateTimeFormatter fWrite = DateTimeFormatter.ofPattern(dateWritePattern);
@@ -129,9 +139,9 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
 
         // define file name and check if it exists already, otherwise find next free file name
         int currentNo = 1;
-        Path file = Paths.get(folder.toString(), pubDate.format(fWrite) + "_" + String.format("%02d", currentNo) + ".pdf");
+        Path file = Paths.get(folder.toString(), buildFileName(fWrite, pubDate, currentNo, issueNumber));
         while (sp.isFileExists(file)) {
-            file = Paths.get(folder.toString(), pubDate.format(fWrite) + "_" + String.format("%02d", ++currentNo) + ".pdf");
+            file = Paths.get(folder.toString(), buildFileName(fWrite, pubDate, ++currentNo, issueNumber));
         }
 
         // find PDF files in master folder and take the first one to copy to target folder
@@ -147,6 +157,14 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
 
         log.info("Export executed for process with ID " + process.getId());
         return true;
+    }
+
+    /**
+     * Builds the export file name in the form {@code <publication date>_<running number>-N<issue number>.pdf},
+     * e.g. {@code 20260407_01-N28510.pdf}.
+     */
+    static String buildFileName(DateTimeFormatter dateWriteFormatter, LocalDate publicationDate, int runningNumber, String issueNumber) {
+        return publicationDate.format(dateWriteFormatter) + "_" + String.format("%02d", runningNumber) + "-N" + issueNumber + ".pdf";
     }
 
     /**
