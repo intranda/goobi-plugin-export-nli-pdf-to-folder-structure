@@ -119,11 +119,11 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
 
         // get issue number and check it
         String issueNumber = replacer.replace(metdataIssueNumber);
+        // If the number is not presen in metadata use default of 0
         if (issueNumber.equals(metdataIssueNumber)) {
-            String error = "Export failed, metadata for issue number cannot be found (" + issueNumber + ".";
-            log.error(error);
-            problems.add(error);
-            return false;
+            String info = "Export failed, metadata for issue number cannot be found (" + issueNumber + ".";
+            issueNumber = "0";
+            log.info(info);
         }
 
         // prepare date conversion
