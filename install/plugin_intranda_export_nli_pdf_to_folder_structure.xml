@@ -18,6 +18,12 @@
 		you can use variable replacer expressions here, too -->
 	<metdataIssueNumber>$(meta.shelfmarksource)</metdataIssueNumber>
 
+	<!-- minimum length the issue number is padded to (default: 0, meaning no padding is added) -->
+	<issueNumberTargetLength>5</issueNumberTargetLength>
+
+	<!-- character used to pad the issue number to the configured length (default: "0") -->
+	<issueNumberPadChar>0</issueNumberPadChar>
+
 	<!-- pattern to use for reading the date information -->
 	<dateReadPattern>yyyy-MM-dd</dateReadPattern>
 

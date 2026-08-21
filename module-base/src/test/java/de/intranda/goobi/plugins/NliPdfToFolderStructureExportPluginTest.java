@@ -90,6 +90,34 @@ public class NliPdfToFolderStructureExportPluginTest {
         assertEquals("20260407_12-N28510.pdf", fileName);
     }
 
+    @Test
+    public void testPadIssueNumberWithDefaultTargetLengthDoesNotChangeValue() {
+        String result = NliPdfToFolderStructureExportPlugin.padIssueNumber("28510", 0, '0');
+
+        assertEquals("28510", result);
+    }
+
+    @Test
+    public void testPadIssueNumberPadsWithLeadingZerosToTargetLength() {
+        String result = NliPdfToFolderStructureExportPlugin.padIssueNumber("28", 5, '0');
+
+        assertEquals("00028", result);
+    }
+
+    @Test
+    public void testPadIssueNumberUsesConfiguredPadChar() {
+        String result = NliPdfToFolderStructureExportPlugin.padIssueNumber("28", 5, 'x');
+
+        assertEquals("xxx28", result);
+    }
+
+    @Test
+    public void testPadIssueNumberDoesNotTruncateValueLongerThanTargetLength() {
+        String result = NliPdfToFolderStructureExportPlugin.padIssueNumber("28510", 3, '0');
+
+        assertEquals("28510", result);
+    }
+
     private XMLConfiguration getConfig() {
         String file = "plugin_intranda_export_nli_pdf_to_folder_structure.xml";
         XMLConfiguration config = new XMLConfiguration();

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Step;
 import org.goobi.production.enums.PluginType;
@@ -85,6 +86,9 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
         String metdataIssueNumber = config.getString("metdataIssueNumber", "$(meta.CurrentNo)");
         String dateReadPattern = config.getString("dateReadPattern", "yyyy-MM-dd");
         String dateWritePattern = config.getString("dateWritePattern", "ddMMyyyy");
+        int issueNumberTargetLength = config.getInt("issueNumberTargetLength", 0);
+        String issueNumberPadCharConfig = config.getString("issueNumberPadChar", "0");
+        char issueNumberPadChar = issueNumberPadCharConfig.isEmpty() ? '0' : issueNumberPadCharConfig.charAt(0);
 
         // read mets file to test if it is readable
         try {
@@ -125,10 +129,8 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
             issueNumber = "0";
             log.info(info);
         }
-        // pad issue number to length 5 with leading zeros
-        while (issueNumber.length() < 5) {
-            issueNumber = "0" + issueNumber;
-        }
+        // pad issue number to the configured length
+        issueNumber = padIssueNumber(issueNumber, issueNumberTargetLength, issueNumberPadChar);
 
         // prepare date conversion
         DateTimeFormatter fRead = DateTimeFormatter.ofPattern(dateReadPattern);
@@ -169,6 +171,14 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
      */
     static String buildFileName(DateTimeFormatter dateWriteFormatter, LocalDate publicationDate, int runningNumber, String issueNumber) {
         return publicationDate.format(dateWriteFormatter) + "_" + String.format("%02d", runningNumber) + "-N" + issueNumber + ".pdf";
+    }
+
+    /**
+     * Pads the issue number with the given character up to the given target length. If the issue number is already
+     * at least as long as the target length, it is returned unchanged.
+     */
+    static String padIssueNumber(String issueNumber, int targetLength, char padChar) {
+        return StringUtils.leftPad(issueNumber, targetLength, padChar);
     }
 
     /**
