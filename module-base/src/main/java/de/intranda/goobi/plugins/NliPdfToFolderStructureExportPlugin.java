@@ -125,6 +125,10 @@ public class NliPdfToFolderStructureExportPlugin implements IExportPlugin, IPlug
             issueNumber = "0";
             log.info(info);
         }
+        // pad issue number to length 5 with leading zeros
+        while (issueNumber.length() < 5) {
+            issueNumber = "0" + issueNumber;
+        }
 
         // prepare date conversion
         DateTimeFormatter fRead = DateTimeFormatter.ofPattern(dateReadPattern);
