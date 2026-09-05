@@ -1,6 +1,9 @@
 # Goobi workflow Plugin: goobi-plugin-export-nli-pdf-to-folder-structure
 
-<img src="https://goobi.io/wp-content/uploads/logo_goobi_plugin.png" align="right" style="margin:0 0 20px 20px;" alt="Plugin for Goobi workflow" width="175" height="109">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://goobi.io/logo_goobi_workflow_dark.png">
+  <img src="https://goobi.io/logo_goobi_workflow.png" align="right" alt="Plugin for Goobi workflow" width="240" height="132" hspace="20" vspace="10">
+</picture>
 
 This Export Plugin for Goobi workflow allows to let PDF files be exported to a defined folder structure based on metadata information. It was developed specifically for the National Library of Israel.
 
